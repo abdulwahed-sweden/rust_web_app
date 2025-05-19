@@ -1,6 +1,5 @@
 use actix_web::{web, HttpResponse, Result};
 use chrono::Local;
-use std::sync::Mutex;
 use tera::Tera;
 
 use crate::models::{AboutTemplateData, AppState, IndexTemplateData};
@@ -46,5 +45,7 @@ pub async fn increment(data: web::Data<AppState>) -> Result<HttpResponse> {
     *counter += 1;
 
     // Redirect back to index page
-    Ok(HttpResponse::SeeOther().header("Location", "/").finish())
+    Ok(HttpResponse::SeeOther()
+        .append_header(("Location", "/"))
+        .finish())
 }

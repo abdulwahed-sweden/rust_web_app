@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use std::sync::Mutex;
 
 // AppState will hold shared application state
