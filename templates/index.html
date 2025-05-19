@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rust Web App</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Rust Web App</h1>
+        <p>Hello, {{ name }}!</p>
+        
+        <div class="counter">
+            <h2>Simple Counter: {{ counter }}</h2>
+            <form action="/increment" method="post">
+                <button type="submit">Increment</button>
+            </form>
+        </div>
+        
+        <div class="nav">
+            <a href="/about">About</a>
+        </div>
+    </div>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
