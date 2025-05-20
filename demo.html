@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIN Analyzer - AI-Powered Vehicle Insights</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #3a86ff;
+            --secondary-color: #8338ec;
+            --accent-color: #ff006e;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .vin-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: -3rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .feature-card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            height: 100%;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .result-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .result-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--dark-color);
+            font-weight: 500;
+            border: none;
+            padding: 1rem 1.5rem;
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .info-card {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .risk-low {
+            border-left: 4px solid #4caf50;
+        }
+        
+        .risk-medium {
+            border-left: 4px solid #ff9800;
+        }
+        
+        .risk-high {
+            border-left: 4px solid #f44336;
+        }
+        
+        .footer {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 3rem 0;
+        }
+        
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-car-front-fill me-2"></i>VIN Analyzer
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center hero-content">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">Decode Your Vehicle's DNA with AI</h1>
+                    <p class="lead mb-4">Get detailed insights, maintenance predictions, and safety information by simply entering your Vehicle Identification Number.</p>
+                    <button class="btn btn-light btn-lg px-4 me-2">Learn More</button>
+                    <button class="btn btn-outline-light btn-lg px-4">Contact Us</button>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block">
+                    <img src="https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Car dashboard" class="img-fluid rounded-3 shadow">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Search Form Section -->
+    <section class="py-5">
+        <div class="container">
+            <!-- VIN Search Form -->
+            <div class="vin-form">
+                <h2 class="text-center mb-4">Enter Your Vehicle Identification Number</h2>
+                <form id="vin-search-form">
+                    <div class="row justify-content-center">
+                        <div class="col-md-8">
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-primary text-white">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-lg" id="vin-input" placeholder="e.g. 1HGCM82633A004352" maxlength="17" value="1HGCM82633A004352">
+                                <button class="btn btn-primary px-4" type="submit">Analyze</button>
+                            </div>
+                            <div class="form-text text-center">
+                                Find your VIN on your vehicle registration, insurance card, or on the driver's side dashboard/door jamb.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Features Section -->
+            <div class="row mt-5 pt-5">
+                <div class="col-12 text-center mb-4">
+                    <h2>What Our AI-Powered VIN Analyzer Reveals</h2>
+                    <p class="lead text-muted">Get comprehensive insights about your vehicle with just one click</p>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card feature-card h-100 p-4">
+                        <div class="card-body text-center">
+                            <i class="bi bi-car-front feature-icon"></i>
+                            <h4 class="card-title">Vehicle Identity</h4>
+                            <p class="card-text">Decode manufacturer, model, year, and assembly details from your VIN.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card feature-card h-100 p-4">
+                        <div class="card-body text-center">
+                            <i class="bi bi-shield-check feature-icon"></i>
+                            <h4 class="card-title">Safety Recalls</h4>
+                            <p class="card-text">Discover any outstanding safety recalls that might affect your vehicle.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card feature-card h-100 p-4">
+                        <div class="card-body text-center">
+                            <i class="bi bi-gear feature-icon"></i>
+                            <h4 class="card-title">Specifications</h4>
+                            <p class="card-text">Access detailed technical specifications for your specific vehicle.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3 mb-4">
+                    <div class="card feature-card h-100 p-4">
+                        <div class="card-body text-center">
+                            <i class="bi bi-graph-up feature-icon"></i>
+                            <h4 class="card-title">AI Predictions</h4>
+                            <p class="card-text">Get AI-powered predictions for maintenance needs and potential issues.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section (Displayed after search) -->
+    <section class="py-5 bg-light" id="results-section">
+        <div class="container">
+            <div class="result-section">
+                <!-- Result Header -->
+                <div class="result-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">2018 Honda Accord EX-L</h2>
+                            <p class="mb-0 lead">VIN: 1HGCM82633A004352</p>
+                        </div>
+                        <div class="col-md-4 text-md-end">
+                            <span class="badge bg-success fs-6 mb-2">No Recalls Found</span>
+                            <p class="mb-0 small">Analysis completed on May 20, 2025</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Result Navigation Tabs -->
+                <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="specs-tab" data-bs-toggle="tab" data-bs-target="#specs" type="button" role="tab">Specifications</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="recalls-tab" data-bs-toggle="tab" data-bs-target="#recalls" type="button" role="tab">Safety Recalls</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab">Maintenance</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ai-insights-tab" data-bs-toggle="tab" data-bs-target="#ai-insights" type="button" role="tab">AI Insights</button>
+                    </li>
+                </ul>
+                
+                <!-- Tab Content -->
+                <div class="tab-content p-4" id="resultTabsContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Vehicle Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Manufacturer</th>
+                                                    <td>Honda</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Model</th>
+                                                    <td>Accord EX-L</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Year</th>
+                                                    <td>2018</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Made In</th>
+                                                    <td>Japan</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Body Type</th>
+                                                    <td>Sedan</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Fuel Type</th>
+                                                    <td>Gasoline</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-info text-white">
+                                        <h5 class="mb-0">AI Vehicle Summary</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p>The 2018 Honda Accord EX-L is a midsize sedan that combines comfort, reliability, and fuel efficiency. This generation of Accord received a complete redesign for 2018, featuring a more sophisticated exterior, upscale interior, and improved technology.</p>
+                                        <p>The EX-L trim offers premium features including leather seating, a power moonroof, and an upgraded audio system. The vehicle has a strong reliability history with minimal reported issues compared to competitors in its class.</p>
+                                        <div class="d-grid">
+                                            <button class="btn btn-outline-primary mt-3">View Full AI Analysis</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-award text-success fs-1 mb-3"></i>
+                                        <h5>Reliability Score</h5>
+                                        <div class="display-4 fw-bold">92%</div>
+                                        <p class="text-muted">Above average for its class</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-speedometer text-warning fs-1 mb-3"></i>
+                                        <h5>Performance Rating</h5>
+                                        <div class="display-4 fw-bold">85%</div>
+                                        <p class="text-muted">Strong in its segment</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-4">
+                                <div class="card h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-cash-coin text-primary fs-1 mb-3"></i>
+                                        <h5>Value Retention</h5>
+                                        <div class="display-4 fw-bold">78%</div>
+                                        <p class="text-muted">After 5 years</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specifications Tab -->
+                    <div class="tab-pane fade" id="specs" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Engine & Performance</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Engine Type</th>
+                                                    <td>1.5L Turbocharged 4-Cylinder</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Horsepower</th>
+                                                    <td>192 hp @ 5,500 rpm</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Torque</th>
+                                                    <td>192 lb-ft @ 1,600-5,000 rpm</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Transmission</th>
+                                                    <td>Continuously Variable Automatic</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Drivetrain</th>
+                                                    <td>Front-Wheel Drive</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Fuel Economy (City/Hwy)</th>
+                                                    <td>30/38 mpg</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Dimensions & Capacity</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Length</th>
+                                                    <td>192.2 inches</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Width</th>
+                                                    <td>73.3 inches</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Height</th>
+                                                    <td>57.1 inches</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Wheelbase</th>
+                                                    <td>111.4 inches</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Passenger Volume</th>
+                                                    <td>105.6 cubic feet</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Cargo Volume</th>
+                                                    <td>16.7 cubic feet</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Features & Technology</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Infotainment</th>
+                                                    <td>8-inch Display Audio Touchscreen</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Connectivity</th>
+                                                    <td>Apple CarPlay, Android Auto, Bluetooth</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Sound System</th>
+                                                    <td>450-watt Premium Audio System with 10 speakers</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Climate Control</th>
+                                                    <td>Dual-Zone Automatic</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Seating</th>
+                                                    <td>Leather-trimmed with heated front seats</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Moonroof</th>
+                                                    <td>One-touch power moonroof</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">Safety & Driver Assistance</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <table class="table table-hover">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row">Airbags</th>
+                                                    <td>Advanced Front, Side, and Curtain Airbags</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Collision Mitigation</th>
+                                                    <td>Collision Mitigation Braking System (CMBS)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Lane Keeping</th>
+                                                    <td>Lane Keeping Assist System (LKAS)</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Adaptive Cruise</th>
+                                                    <td>Adaptive Cruise Control with Low-Speed Follow</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Blind Spot</th>
+                                                    <td>Blind Spot Information System</td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row">Backup Camera</th>
+                                                    <td>Multi-angle rearview camera</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recalls Tab -->
+                    <div class="tab-pane fade" id="recalls" role="tabpanel">
+                        <div class="alert alert-success mb-4">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            <strong>Good news!</strong> No open recalls found for this vehicle.
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Recall History</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Campaign #</th>
+                                                <th>Component</th>
+                                                <th>Description</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>03/12/2019</td>
+                                                <td>19V-182</td>
+                                                <td>Fuel System</td>
+                                                <td>Improper fuel pump assembly may cause engine stalling.</td>
+                                                <td><span class="badge bg-success">Completed</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>07/25/2018</td>
+                                                <td>18V-489</td>
+                                                <td>Electrical System</td>
+                                                <td>Software error may cause backup camera display to malfunction.</td>
+                                                <td><span class="badge bg-success">Completed</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="small text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Recalls shown as "Completed" have been addressed by a Honda dealership. If your vehicle has open recalls, contact your local dealer to schedule service.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Get Updates</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Stay informed about future safety recalls for your 2018 Honda Accord EX-L. We'll send you notifications if any new recalls are issued.</p>
+                                <form class="row g-3">
+                                    <div class="col-md-6">
+                                        <input type="email" class="form-control" placeholder="Your email address">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button type="submit" class="btn btn-primary w-100">Subscribe to Recall Alerts</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Maintenance Tab -->
+                    <div class="tab-pane fade" id="maintenance" role="tabpanel">
+                        <h4 class="mb-4">AI-Powered Maintenance Predictions</h4>
+                        <p class="lead mb-4">Based on your vehicle's model, year, and common issues, our AI predicts the following maintenance needs:</p>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-4">
+                                <div class="card risk-medium info-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Brake System</h5>
+                                        <span class="badge bg-warning mb-2">Medium Risk</span>
+                                        <p class="card-text">Brake pads may be approaching end of life based on vehicle age and model history.</p>
+                                        <div class="progress mb-3">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 65%">65%</div>
+                                        </div>
+                                        <h6>Recommendation:</h6>
+                                        <p class="small">Inspect brake pads and rotors during next service. Front pads typically need replacement around 40,000-50,000 miles.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4 mb-4">
+                                <div class="card risk-high info-card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Timing Belt</h5>
+                                        <span class="badge bg-danger mb-2">High Risk</span>
+                                        <p class="card-text">Timing belt replacement interval may be approaching based on vehicle age.</p>
+                                        <div class="progress mb-3">
+                                           <div class="progress-bar bg-danger" role="progressbar" style="width: 80%">80%</div>
+                                       </div>
+                                       <h6>Recommendation:</h6>
+                                       <p class="small">Check service records for last replacement and replace if over 60,000 miles. Failure could lead to catastrophic engine damage.</p>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-4 mb-4">
+                               <div class="card risk-low info-card">
+                                   <div class="card-body">
+                                       <h5 class="card-title">Battery</h5>
+                                       <span class="badge bg-success mb-2">Low Risk</span>
+                                       <p class="card-text">Battery may show reduced performance in cold weather.</p>
+                                       <div class="progress mb-3">
+                                           <div class="progress-bar bg-success" role="progressbar" style="width: 40%">40%</div>
+                                       </div>
+                                       <h6>Recommendation:</h6>
+                                       <p class="small">Test battery health during winter months. Typical replacement interval is 3-5 years, so monitor performance if the original battery is still installed.</p>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-4 mb-4">
+                               <div class="card risk-low info-card">
+                                   <div class="card-body">
+                                       <h5 class="card-title">Transmission</h5>
+                                       <span class="badge bg-success mb-2">Low Risk</span>
+                                       <p class="card-text">CVT transmission fluid service may be due based on mileage.</p>
+                                       <div class="progress mb-3">
+                                           <div class="progress-bar bg-success" role="progressbar" style="width: 35%">35%</div>
+                                       </div>
+                                       <h6>Recommendation:</h6>
+                                       <p class="small">Check transmission fluid condition. Honda recommends service every 30,000 miles or if fluid appears dark or burnt.</p>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-4 mb-4">
+                               <div class="card risk-medium info-card">
+                                   <div class="card-body">
+                                       <h5 class="card-title">Suspension</h5>
+                                       <span class="badge bg-warning mb-2">Medium Risk</span>
+                                       <p class="card-text">Front struts may be showing wear based on typical usage patterns.</p>
+                                       <div class="progress mb-3">
+                                           <div class="progress-bar bg-warning" role="progressbar" style="width: 55%">55%</div>
+                                       </div>
+                                       <h6>Recommendation:</h6>
+                                       <p class="small">Have suspension inspected during next service. Listen for unusual noises when driving over bumps.</p>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-4 mb-4">
+                               <div class="card risk-low info-card">
+                                   <div class="card-body">
+                                       <h5 class="card-title">HVAC System</h5>
+                                       <span class="badge bg-success mb-2">Low Risk</span>
+                                       <p class="card-text">Cabin air filter replacement may be needed based on time interval.</p>
+                                       <div class="progress mb-3">
+                                           <div class="progress-bar bg-success" role="progressbar" style="width: 30%">30%</div>
+                                       </div>
+                                       <h6>Recommendation:</h6>
+                                       <p class="small">Replace cabin air filter if not changed in the last 15,000-30,000 miles. Check for reduced airflow from vents.</p>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                       
+                       <div class="card mt-4">
+                           <div class="card-header bg-primary text-white">
+                               <h5 class="mb-0">Maintenance Schedule</h5>
+                           </div>
+                           <div class="card-body">
+                               <div class="table-responsive">
+                                   <table class="table table-hover">
+                                       <thead>
+                                           <tr>
+                                               <th>Service</th>
+                                               <th>Interval</th>
+                                               <th>Last Service</th>
+                                               <th>Next Due</th>
+                                               <th>Priority</th>
+                                           </tr>
+                                       </thead>
+                                       <tbody>
+                                           <tr>
+                                               <td>Oil & Filter Change</td>
+                                               <td>7,500 miles</td>
+                                               <td>42,500 miles</td>
+                                               <td>50,000 miles</td>
+                                               <td><span class="badge bg-warning">Medium</span></td>
+                                           </tr>
+                                           <tr>
+                                               <td>Tire Rotation</td>
+                                               <td>7,500 miles</td>
+                                               <td>42,500 miles</td>
+                                               <td>50,000 miles</td>
+                                               <td><span class="badge bg-warning">Medium</span></td>
+                                           </tr>
+                                           <tr>
+                                               <td>Air Filter</td>
+                                               <td>30,000 miles</td>
+                                               <td>30,000 miles</td>
+                                               <td>60,000 miles</td>
+                                               <td><span class="badge bg-success">Low</span></td>
+                                           </tr>
+                                           <tr class="table-warning">
+                                               <td>Brake Fluid</td>
+                                               <td>3 years</td>
+                                               <td>Unknown</td>
+                                               <td>Recommended soon</td>
+                                               <td><span class="badge bg-danger">High</span></td>
+                                           </tr>
+                                           <tr>
+                                               <td>Cabin Air Filter</td>
+                                               <td>15,000 miles</td>
+                                               <td>30,000 miles</td>
+                                               <td>45,000 miles</td>
+                                               <td><span class="badge bg-danger">High</span></td>
+                                           </tr>
+                                           <tr>
+                                               <td>Spark Plugs</td>
+                                               <td>100,000 miles</td>
+                                               <td>Never</td>
+                                               <td>100,000 miles</td>
+                                               <td><span class="badge bg-success">Low</span></td>
+                                           </tr>
+                                       </tbody>
+                                   </table>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+                   
+                   <!-- AI Insights Tab -->
+                   <div class="tab-pane fade" id="ai-insights" role="tabpanel">
+                       <div class="alert alert-info mb-4">
+                           <i class="bi bi-robot me-2"></i>
+                           <strong>AI-Generated Analysis:</strong> This content is generated by our advanced AI model based on aggregate data from thousands of similar vehicles and owner experiences.
+                       </div>
+                       
+                       <div class="row">
+                           <div class="col-md-6 mb-4">
+                               <div class="card h-100">
+                                   <div class="card-header bg-primary text-white">
+                                       <h5 class="mb-0">Common Issues</h5>
+                                   </div>
+                                   <div class="card-body">
+                                       <ul class="list-group list-group-flush">
+                                           <li class="list-group-item">
+                                               <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                                               <strong>Electrical system faults in older models</strong>
+                                               <p class="small text-muted mb-0">Typically manifests as intermittent dashboard display issues.</p>
+                                           </li>
+                                           <li class="list-group-item">
+                                               <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                                               <strong>Transmission hesitation under load</strong>
+                                               <p class="small text-muted mb-0">Some owners report CVT hesitation when accelerating rapidly.</p>
+                                           </li>
+                                           <li class="list-group-item">
+                                               <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                                               <strong>Climate control system failures</strong>
+                                               <p class="small text-muted mb-0">A/C compressor issues reported in approximately 3% of vehicles.</p>
+                                           </li>
+                                           <li class="list-group-item">
+                                               <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                                               <strong>Oil consumption in high-mileage engines</strong>
+                                               <p class="small text-muted mb-0">Some engines begin to consume oil after 80,000+ miles.</p>
+                                           </li>
+                                       </ul>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-6 mb-4">
+                               <div class="card h-100">
+                                   <div class="card-header bg-primary text-white">
+                                       <h5 class="mb-0">Maintenance Tips</h5>
+                                   </div>
+                                   <div class="card-body">
+                                       <ul class="list-group list-group-flush">
+                                           <li class="list-group-item">
+                                               <i class="bi bi-tools text-success me-2"></i>
+                                               <strong>Change transmission fluid every 40,000 miles</strong>
+                                               <p class="small text-muted mb-0">This interval preserves CVT longevity beyond factory recommendations.</p>
+                                           </li>
+                                           <li class="list-group-item">
+                                               <i class="bi bi-tools text-success me-2"></i>
+                                               <strong>Inspect timing components at 60,000 mile intervals</strong>
+                                               <p class="small text-muted mb-0">Check for belt wear or tensioner issues before they cause problems.</p>
+                                           </li>
+                                           <li class="list-group-item">
+                                               <i class="bi bi-tools text-success me-2"></i>
+                                               <strong>Use manufacturer-specified oil weight</strong>
+                                               <p class="small text-muted mb-0">The 1.5L turbo engine performs best with 0W-20 synthetic oil.</p>
+                                           </li>
+                                           <li class="list-group-item">
+                                               <i class="bi bi-tools text-success me-2"></i>
+                                               <strong>Check and clean battery terminals regularly</strong>
+                                               <p class="small text-muted mb-0">Prevents electrical issues common in this generation of Accord.</p>
+                                           </li>
+                                       </ul>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-6 mb-4">
+                               <div class="card">
+                                   <div class="card-header bg-primary text-white">
+                                       <h5 class="mb-0">Long-term Reliability</h5>
+                                   </div>
+                                   <div class="card-body">
+                                       <p>This 2018 Honda Accord EX-L generally shows above-average reliability with proper maintenance. Most units reach 150,000 miles with only minor issues, though transmission concerns may arise in higher mileage examples.</p>
+                                       <p>The 1.5L turbocharged engine is relatively new to the Accord lineup, but has proven reliable across Honda's vehicle range with proper oil change intervals. The CVT transmission has improved significantly over previous generations, though some owners report hesitation or "rubber band" feeling under certain driving conditions.</p>
+                                       <p>Electrical systems are generally reliable, with the infotainment system receiving occasional software updates to address minor bugs.</p>
+                                       
+                                       <div class="mt-4">
+                                           <h6>Reliability Ratings by System:</h6>
+                                           <div class="mb-3">
+                                               <div class="d-flex justify-content-between">
+                                                   <span>Engine</span>
+                                                   <span>9/10</span>
+                                               </div>
+                                               <div class="progress">
+                                                   <div class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
+                                               </div>
+                                           </div>
+                                           <div class="mb-3">
+                                               <div class="d-flex justify-content-between">
+                                                   <span>Transmission</span>
+                                                   <span>8/10</span>
+                                               </div>
+                                               <div class="progress">
+                                                   <div class="progress-bar bg-success" role="progressbar" style="width: 80%"></div>
+                                               </div>
+                                           </div>
+                                           <div class="mb-3">
+                                               <div class="d-flex justify-content-between">
+                                                   <span>Electrical System</span>
+                                                   <span>7/10</span>
+                                               </div>
+                                               <div class="progress">
+                                                   <div class="progress-bar bg-primary" role="progressbar" style="width: 70%"></div>
+                                               </div>
+                                           </div>
+                                           <div class="mb-3">
+                                               <div class="d-flex justify-content-between">
+                                                   <span>Suspension</span>
+                                                   <span>9/10</span>
+                                               </div>
+                                               <div class="progress">
+                                                   <div class="progress-bar bg-success" role="progressbar" style="width: 90%"></div>
+                                               </div>
+                                           </div>
+                                           <div class="mb-3">
+                                               <div class="d-flex justify-content-between">
+                                                   <span>Interior Components</span>
+                                                   <span>8/10</span>
+                                               </div>
+                                               <div class="progress">
+                                                   <div class="progress-bar bg-success" role="progressbar" style="width: 80%"></div>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-md-6 mb-4">
+                               <div class="card">
+                                   <div class="card-header bg-primary text-white">
+                                       <h5 class="mb-0">Performance Analysis</h5>
+                                   </div>
+                                   <div class="card-body">
+                                       <p>This vehicle offers balanced performance with adequate power for most driving scenarios. The 1.5L turbocharged engine provides 192 horsepower, which delivers responsive acceleration in daily driving conditions. Turbo lag is minimal, with peak torque available at low RPMs (1,600 rpm).</p>
+                                       <p>Handling is predictable though not sporty, with comfort-oriented suspension tuning that prioritizes ride quality over cornering ability. The Accord features a MacPherson strut front suspension and multi-link rear setup that delivers a composed ride over various road surfaces.</p>
+                                       <p>The CVT transmission is tuned for efficiency but includes simulated gear changes under heavy acceleration to provide a more natural driving feel compared to earlier CVT designs.</p>
+                                       
+                                       <div class="row mt-4">
+                                           <div class="col-md-6">
+                                               <div class="card mb-3">
+                                                   <div class="card-body text-center">
+                                                       <h6>0-60 MPH Time</h6>
+                                                       <div class="display-6">7.3s</div>
+                                                       <p class="small text-muted">Good for midsize sedan segment</p>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                           <div class="col-md-6">
+                                               <div class="card mb-3">
+                                                   <div class="card-body text-center">
+                                                       <h6>Quarter Mile</h6>
+                                                       <div class="display-6">15.7s</div>
+                                                       <p class="small text-muted">At 90 mph</p>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                           
+                           <div class="col-12 mb-4">
+                               <div class="card">
+                                   <div class="card-header bg-primary text-white">
+                                       <h5 class="mb-0">Value Retention</h5>
+                                   </div>
+                                   <div class="card-body">
+                                       <p>This model retains value well compared to competitors, typically holding 55-60% of its value after 5 years. The Honda Accord historically ranks among the top midsize sedans for resale value, alongside the Toyota Camry.</p>
+                                       <p>Several factors contribute to this strong value retention:</p>
+                                       <ul>
+                                           <li>Brand reputation for reliability and quality</li>
+                                           <li>Modern styling that ages well</li>
+                                           <li>Strong safety features and crash test ratings</li>
+                                           <li>Competitive fuel economy</li>
+                                           <li>Desirable EX-L trim level with leather seats and premium features</li>
+                                       </ul>
+                                       
+                                       <div class="row mt-4">
+                                           <div class="col-md-8">
+                                               <canvas id="valueChart" width="400" height="200"></canvas>
+                                           </div>
+                                           <div class="col-md-4">
+                                               <div class="card bg-light h-100">
+                                                   <div class="card-body">
+                                                       <h6>Estimated Current Market Value</h6>
+                                                       <div class="display-5 mb-3">$21,450</div>
+                                                       <p class="text-muted small">Based on average condition and mileage of 45,000 miles</p>
+                                                       <hr>
+                                                       <div class="d-flex justify-content-between mb-2 small">
+                                                           <span>Original MSRP:</span>
+                                                           <span>$30,865</span>
+                                                       </div>
+                                                       <div class="d-flex justify-content-between mb-2 small">
+                                                           <span>Value Retained:</span>
+                                                           <span>69.5%</span>
+                                                       </div>
+                                                       <div class="d-flex justify-content-between small">
+                                                           <span>Depreciation:</span>
+                                                           <span>$9,415</span>
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="p-4 bg-light border-top">
+                   <p class="text-center mb-0">
+                       <i class="bi bi-info-circle me-2"></i>
+                       All analysis data updated on May 20, 2025. Analysis is based on the VIN, manufacturer data, and industry statistics.
+                   </p>
+               </div>
+           </div>
+       </div>
+   </section>
+
+   <!-- How It Works Section -->
+   <section class="py-5">
+       <div class="container">
+           <div class="text-center mb-5">
+               <h2 class="display-5 fw-bold">How Our VIN Analyzer Works</h2>
+               <p class="lead text-muted">Combining vehicle data with advanced AI to deliver comprehensive insights</p>
+           </div>
+           
+           <div class="row g-4">
+               <div class="col-md-3">
+                   <div class="card border-0 h-100 text-center">
+                       <div class="card-body">
+                           <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                               <i class="bi bi-123 fs-1"></i>
+                           </div>
+                           <h4>Enter Your VIN</h4>
+                           <p>Provide your 17-character Vehicle Identification Number found on your vehicle's documents or windshield.</p>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="col-md-3">
+                   <div class="card border-0 h-100 text-center">
+                       <div class="card-body">
+                           <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                               <i class="bi bi-search fs-1"></i>
+                           </div>
+                           <h4>Data Collection</h4>
+                           <p>Our system checks multiple databases for your vehicle's specifications and history records.</p>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="col-md-3">
+                   <div class="card border-0 h-100 text-center">
+                       <div class="card-body">
+                           <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                               <i class="bi bi-robot fs-1"></i>
+                           </div>
+                           <h4>AI Analysis</h4>
+                           <p>Advanced AI algorithms analyze your vehicle data to predict maintenance needs and provide insights.</p>
+                       </div>
+                   </div>
+               </div>
+               
+               <div class="col-md-3">
+                   <div class="card border-0 h-100 text-center">
+                       <div class="card-body">
+                           <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                               <i class="bi bi-file-earmark-text fs-1"></i>
+                           </div>
+                           <h4>Detailed Report</h4>
+                           <p>Receive a comprehensive report with vehicle details, safety recalls, and maintenance predictions.</p>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </section>
+
+   <!-- Call to Action -->
+   <section class="py-5 bg-primary text-white">
+       <div class="container">
+           <div class="row align-items-center">
+               <div class="col-lg-8">
+                   <h2 class="display-5 fw-bold mb-3">Ready to Analyze Your Vehicle?</h2>
+                   <p class="lead mb-4">Get detailed insights and maintenance predictions by simply entering your VIN.</p>
+               </div>
+               <div class="col-lg-4 text-lg-end">
+                   <a href="#" class="btn btn-light btn-lg px-4">Analyze My VIN Now</a>
+               </div>
+           </div>
+       </div>
+   </section>
+
+   <!-- Footer -->
+   <footer class="footer">
+       <div class="container">
+           <div class="row">
+               <div class="col-md-4 mb-4 mb-md-0">
+                   <h5 class="text-white mb-3">VIN Analyzer</h5>
+                   <p>Providing comprehensive vehicle insights powered by AI. Our mission is to help vehicle owners make informed decisions about their maintenance and ownership.</p>
+               </div>
+               <div class="col-md-2 mb-4 mb-md-0">
+                   <h5 class="text-white mb-3">Links</h5>
+                   <ul class="list-unstyled">
+                       <li><a href="#" class="text-white-50">Home</a></li>
+                       <li><a href="#" class="text-white-50">About Us</a></li>
+                       <li><a href="#" class="text-white-50">Services</a></li>
+                       <li><a href="#" class="text-white-50">FAQ</a></li>
+                       <li><a href="#" class="text-white-50">Contact</a></li>
+                   </ul>
+               </div>
+               <div class="col-md-3 mb-4 mb-md-0">
+                   <h5 class="text-white mb-3">Resources</h5>
+                   <ul class="list-unstyled">
+                       <li><a href="#" class="text-white-50">Vehicle Maintenance Guide</a></li>
+                       <li><a href="#" class="text-white-50">Understanding Your VIN</a></li>
+                       <li><a href="#" class="text-white-50">Safety Recall Information</a></li>
+                       <li><a href="#" class="text-white-50">Blog</a></li>
+                   </ul>
+               </div>
+               <div class="col-md-3">
+                   <h5 class="text-white mb-3">Connect With Us</h5>
+                   <div class="d-flex gap-3 mb-3">
+                       <a href="#" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
+                       <a href="#" class="text-white fs-4"><i class="bi bi-twitter"></i></a>
+                       <a href="#" class="text-white fs-4"><i class="bi bi-instagram"></i></a>
+                       <a href="#" class="text-white fs-4"><i class="bi bi-linkedin"></i></a>
+                   </div>
+                   <p class="small text-white-50">Sign up for our newsletter for vehicle maintenance tips and updates:</p>
+                   <form>
+                       <div class="input-group">
+                           <input type="email" class="form-control" placeholder="Your email">
+                           <button class="btn btn-light" type="submit">Subscribe</button>
+                       </div>
+                   </form>
+               </div>
+           </div>
+           <hr class="bg-white-50 my-4">
+           <div class="row">
+               <div class="col-md-6 small text-white-50">
+                   &copy; 2025 VIN Analyzer. All rights reserved.
+               </div>
+               <div class="col-md-6 text-md-end small">
+                   <a href="#" class="text-white-50 me-3">Privacy Policy</a>
+                   <a href="#" class="text-white-50 me-3">Terms of Service</a>
+                   <a href="#" class="text-white-50">Cookie Policy</a>
+               </div>
+           </div>
+       </div>
+   </footer>
+
+   <!-- Bootstrap JS -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- Chart.js -->
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   
+   <script>
+       // Initialize value retention chart
+       document.addEventListener('DOMContentLoaded', function() {
+           // Value retention chart
+           if(document.getElementById('valueChart')) {
+               const ctx = document.getElementById('valueChart').getContext('2d');
+               const valueChart = new Chart(ctx, {
+                   type: 'line',
+                   data: {
+                       labels: ['New', '1 Year', '2 Years', '3 Years', '4 Years', '5 Years', 'Now'],
+                       datasets: [{
+                           label: 'Estimated Value ($)',
+                           data: [30865, 28500, 26200, 24300, 22800, 21600, 21450],
+                           backgroundColor: 'rgba(58, 134, 255, 0.1)',
+                           borderColor: 'rgba(58, 134, 255, 1)',
+                           borderWidth: 3,
+                           pointBackgroundColor: 'rgba(58, 134, 255, 1)',
+                           pointRadius: 5,
+                           tension: 0.1,
+                           fill: true
+                       },
+                       {
+                           label: 'Industry Average ($)',
+                           data: [30865, 27000, 24100, 21800, 19900, 18500, 18100],
+                           backgroundColor: 'rgba(131, 56, 236, 0.05)',
+                           borderColor: 'rgba(131, 56, 236, 0.8)',
+                           borderWidth: 2,
+                           pointBackgroundColor: 'rgba(131, 56, 236, 0.8)',
+                           pointRadius: 4,
+                           tension: 0.1,
+                           borderDash: [5, 5],
+                           fill: false
+                       }]
+                   },
+                   options: {
+                       plugins: {
+                           legend: {
+                               position: 'top',
+                           },
+                           tooltip: {
+                               mode: 'index',
+                               intersect: false,
+                               callbacks: {
+                                   label: function(context) {
+                                       return context.dataset.label + ': $' + context.parsed.y.toLocaleString();
+                                   }
+                               }
+                           }
+                       },
+                       scales: {
+                           y: {
+                               beginAtZero: false,
+                               min: 15000,
+                               ticks: {
+                                   callback: function(value) {
+                                       return '$' + value.toLocaleString();
+                                   }
+                               }
+                           }
+                       },
+                       interaction: {
+                           intersect: false,
+                           mode: 'index',
+                       },
+                       responsive: true,
+                       maintainAspectRatio: false
+                   }
+               });
+           }
+           
+           // Show analysis results on form submission
+           const vinForm = document.getElementById('vin-search-form');
+           if(vinForm) {
+               vinForm.addEventListener('submit', function(e) {
+                   e.preventDefault();
+                   document.getElementById('results-section').scrollIntoView({ behavior: 'smooth' });
+               });
+           }
+           
+           // Add hover effect to cards
+           const cards = document.querySelectorAll('.feature-card, .info-card');
+           cards.forEach(card => {
+               card.addEventListener('mouseenter', function() {
+                   this.classList.add('shadow-lg');
+               });
+               card.addEventListener('mouseleave', function() {
+                   this.classList.remove('shadow-lg');
+               });
+           });
+       });
+   </script>
+</body
+</html>
